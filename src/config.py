@@ -3,6 +3,8 @@ from typing import Dict
 from loguru import logger
 from aiogram.bot.api import TELEGRAM_PRODUCTION
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram import Bot
+from aiogram.dispatcher import Dispatcher
 
 # Prepare Logging 
 logger.remove()
@@ -10,7 +12,7 @@ logger.add(stdout, colorize=True, format="<green>{time:DD.MM.YY H:mm:ss}</green>
            "| <yellow><b>{level}</b></yellow> | <magenta>{file}</magenta> | <cyan>{message}</cyan>")
 
 # Prepare BOT and telegram bot api server
-token = "1291948093:AAFnYMDhrZwvNAOJvRxynih7Pe4PhbuPSuY"
+token = "1291948093:AAFwkk4fcJYO1fRzcM7IR3JZmV_jpvG76rY"
 
 local_server = TELEGRAM_PRODUCTION
 storage = MemoryStorage()
@@ -54,3 +56,10 @@ BOT_COMMANDS: Dict[str, str] = {
     "smoothie": "Помощь в приготовлении смузи",
     "gsdfgsdgsd": "sdfgsdfg sdf gsdf g",
     }
+
+bot = Bot(token=token, validate_token=True, parse_mode="HTML", server=local_server)
+dp = Dispatcher(bot, run_tasks_by_default=True, storage=storage)
+
+SMOOTHIE_LOG_CHAT_ID = -1001357752762
+SMOOTHIE_CHANNEL_ID = SMOOTHIE_LOG_CHAT_ID
+SW_BOT_ID = 227859379

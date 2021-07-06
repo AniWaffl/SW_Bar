@@ -4,7 +4,6 @@ from typing import Dict
 from aiogram import types
 from loguru import logger
 
-from addons.set_bot_commands.commands import set_default_commands
 import config as cfg
 from main import dp
 

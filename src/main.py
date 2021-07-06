@@ -1,12 +1,11 @@
 from aiogram import executor, types, exceptions
-from aiogram import Bot
 from aiogram.contrib.middlewares import logging
-from aiogram.dispatcher import Dispatcher
 from aiogram.dispatcher.webhook import configure_app
 from aiohttp import web
 from aiohttp.web_app import Application
 from loguru import logger
 import config as cfg
+from config import bot, dp
 
 # Create database tables
 import support.db
@@ -16,10 +15,8 @@ from support.models.chat import Chat
 from support.repositories.chats import ChatRepository 
 
 # Activate all modules
-from addons import *
+import addons
 
-bot = Bot(token=cfg.token, validate_token=True, parse_mode="HTML", server=cfg.local_server)
-dp = Dispatcher(bot, run_tasks_by_default=True, storage=cfg.storage)
 
 logging_middleware = logging.LoggingMiddleware()
 logging_middleware.logger = logger
@@ -29,13 +26,6 @@ dp.middleware.setup(UserMiddleware())  # Мидлварь для паттерн�
 from support.throttlingmiddleware import ThrottlingMiddleware
 dp.middleware.setup(ThrottlingMiddleware(limit=.6))  # Мидлварь для троттлинга
 
-
-@dp.message_handler(
-    commands="settings",
-    commands_prefix="!"
-)
-async def get_settings_keyboard(message: types.Message):
-    await message.answer("Настройки чата")
 
 @dp.errors_handler(run_task=True)
 async def errors(update: types.Update, error: Exception):

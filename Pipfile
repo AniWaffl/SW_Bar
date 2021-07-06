@@ -12,6 +12,7 @@ humanize = "*"
 aioredis = "*"
 databases = {extras = ["sqlite"], version = "*"}
 pydantic = {extras = ["email"], version = "*"}
+numpy = "*"
 
 [dev-packages]
 
