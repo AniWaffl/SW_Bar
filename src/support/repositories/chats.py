@@ -1,5 +1,6 @@
 import datetime
 from typing import List, Optional
+
 from support.db.chats import chats
 from support.models.chat import Chat
 from .base import BaseRepository
@@ -34,6 +35,11 @@ class ChatRepository(BaseRepository):
         query = chats.update().where(chats.c.id==id).values(**values)
         await self.database.execute(query)
         return u
+
+    async def delete(self, id: int) -> bool:
+        query = chats.delete().where(chats.c.id==id)
+        res = await self.database.execute(query)
+        return res
 
     # async def get_by_email(self, email: str) -> User:
     #     query = users.select().where(users.c.email==email)

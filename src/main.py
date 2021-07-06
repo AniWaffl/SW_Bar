@@ -8,7 +8,15 @@ from aiohttp.web_app import Application
 from loguru import logger
 import config as cfg
 
+# Create database tables
 import support.db
+
+# Models
+from support.models.chat import Chat
+from support.repositories.chats import ChatRepository 
+
+# Activate all modules
+from addons import *
 
 bot = Bot(token=cfg.token, validate_token=True, parse_mode="HTML", server=cfg.local_server)
 dp = Dispatcher(bot, run_tasks_by_default=True, storage=cfg.storage)
@@ -45,21 +53,18 @@ async def errors(update: types.Update, error: Exception):
 
 
 
-# @dp.message_handler(content_types=types.ContentTypes.MIGRATE_FROM_CHAT_ID)
-# async def migrate_group_to_supergroup(message: types.Message, Chat: ChatType):
-#     """
-#     Миграция группы до супергруппы
-#     message.migrate_from_chat_id - Предыдущий айди
-#     message.chat.id - Новый айди
-#     """
-#     #  TODO проверить миграцию
-#     chat = Chat
-#     await mongo.get_coll(cfg.chat_collection).delete_one({"_id": chat._id})  # Удаляем новую запись из бд
-#     Chat = ChatType(await mongo.get_coll(cfg.chat_collection).find_one({"_id": message.migrate_from_chat_id}))  # Находим старую запись в бд
-#     await mongo.get_coll(cfg.chat_collection).delete_one({"_id": Chat._id})  # Удаляем старую запись, ибо _id - защищённое поле
-#     Chat._id = message.chat.id
-#     await mongo.get_coll(cfg.chat_collection).insert_one(Chat)  # Заливаем обновлённый документ
-#     logger.info(f"Группа {message.migrate_from_chat_id} обновилась до супергруппы {message.chat.id}")
+@dp.message_handler(content_types=types.ContentTypes.MIGRATE_FROM_CHAT_ID)
+async def migrate_group_to_supergroup(message: types.Message, Chat: Chat):
+    """
+    Миграция группы до супергруппы
+    message.migrate_from_chat_id - Предыдущий айди
+    message.chat.id - Новый айди
+    """
+    repo = ChatRepository()
+    await repo.delete(message.migrate_from_chat_id)
+    Chat.id = message.chat.id
+    await repo.update(message.chat.id, Chat)
+    logger.info(f"Группа {message.migrate_from_chat_id} обновилась до супергруппы {message.chat.id}")
 
 
 

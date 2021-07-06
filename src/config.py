@@ -1,4 +1,5 @@
 from sys import stdout
+from typing import Dict
 from loguru import logger
 from aiogram.bot.api import TELEGRAM_PRODUCTION
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -48,3 +49,8 @@ admins = [579287019,]  # Список глобальных админов
 GLOBAL_DELAY = .5
 TRIGGER_LOGGING = True  # Выключить, если запущен не основной бот
 LOGGING_CHANNEL = 579287019
+
+BOT_COMMANDS: Dict[str, str] = {
+    "smoothie": "Помощь в приготовлении смузи",
+    "gsdfgsdgsd": "sdfgsdfg sdf gsdf g",
+    }

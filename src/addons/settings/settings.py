@@ -1,7 +1,7 @@
 import re
 from aiogram import types
 from main import dp
-from support import ponytypes
+from support.models.chat import Chat
 from loguru import logger
 from addons.utils.keyboards import bool_icon
 
@@ -25,7 +25,7 @@ module_naming = {
     commands="settings",
     commands_prefix="!"
 )
-async def get_settings_keyboard(message: types.Message, Chat: ponytypes.ChatType):
+async def get_settings_keyboard(message: types.Message, Chat: Chat):
     await message.answer("Настройки чата", reply_markup=settings_keyboard(Chat))
 
 
@@ -34,7 +34,7 @@ async def get_settings_keyboard(message: types.Message, Chat: ponytypes.ChatType
     is_chat_admin=True,
     regexp=r"^settings-(?P<settings>.*)"
 )
-async def switch_settings(call: types.CallbackQuery, regexp: re.Match, Chat: ponytypes.ChatType):
+async def switch_settings(call: types.CallbackQuery, regexp: re.Match, Chat: Chat):
     settings_type = regexp.group("settings")
     if settings_type in Chat.modules:
         Chat.modules[settings_type] = not Chat.modules[settings_type]
@@ -46,7 +46,7 @@ async def switch_settings(call: types.CallbackQuery, regexp: re.Match, Chat: pon
     await call.message.edit_reply_markup(reply_markup=settings_keyboard(Chat))
 
 
-def settings_keyboard(chat: ponytypes.ChatType) -> types.InlineKeyboardMarkup:
+def settings_keyboard(chat: Chat) -> types.InlineKeyboardMarkup:
     keyboard = types.InlineKeyboardMarkup(row_width=2)
     for module, value in chat.modules.items():
         keyboard.insert(types.InlineKeyboardButton(f"{bool_icon(value)} {module_naming[module]}", callback_data=f"settings-{module}"))
