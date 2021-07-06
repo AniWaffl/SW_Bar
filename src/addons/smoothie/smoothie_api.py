@@ -29,7 +29,6 @@ def invert_list(l, potential_recipe):
     return remove(l, list_for_remove)
 
 def true_position_is_0(key, l, temp):
-    t = process_time()
     for rp, pos1, pos2 in itertools.product(l, range(5), range(5)):
         if pos2 == pos1:
             continue
@@ -38,19 +37,6 @@ def true_position_is_0(key, l, temp):
         elif key[pos2] != rp[pos2]:
             continue
         temp.append(rp)
-    elapsed_time = process_time() - t
-    print("OPT", elapsed_time)
-
-
-    t = process_time()
-    for rp in l:
-        for i in range(5):
-            for j in range(5):
-                if j != i:
-                    if key[i] == rp[i] and key[j] == rp[j]:
-                        temp.append(rp)
-    elapsed_time = process_time() - t
-    print("NONOPT", elapsed_time)
     return remove(l, temp)
 
 def true_position_is_2(key, l, temp):
