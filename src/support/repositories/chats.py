@@ -9,7 +9,14 @@ class ChatRepository(BaseRepository):
 
     async def get_all(self, limit: int = 100, skip: int = 0) -> List[Chat]:
         query = chats.select().limit(limit).offset(skip)
-        return await self.database.fetch_all(query=query)
+        chat = await self.database.fetch_all(query=query)
+        if chat is None:
+            return None
+        else:
+            lst = []
+            for i in chat:
+                lst.append(Chat.parse_obj(i))
+        return lst
 
     async def get_by_id(self, id: int) -> Optional[Chat]:
         query = chats.select().where(chats.c.id==id)
@@ -41,9 +48,3 @@ class ChatRepository(BaseRepository):
         res = await self.database.execute(query)
         return res
 
-    # async def get_by_email(self, email: str) -> User:
-    #     query = users.select().where(users.c.email==email)
-    #     user = await self.database.fetch_one(query)
-    #     if user is None:
-    #         return None
-    #     return User.parse_obj(user)

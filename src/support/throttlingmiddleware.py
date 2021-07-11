@@ -3,7 +3,6 @@ from aiogram.dispatcher import DEFAULT_RATE_LIMIT
 from aiogram.dispatcher.handler import CancelHandler, current_handler
 from aiogram.dispatcher.middlewares import BaseMiddleware
 from aiogram.utils.exceptions import Throttled
-from support.utils import log
 
 
 class ThrottlingMiddleware(BaseMiddleware):
@@ -27,9 +26,6 @@ class ThrottlingMiddleware(BaseMiddleware):
 
         try:
             await dispatcher.throttle(key, rate=limit)
-        except Throttled as t:
-
-            await log(message.from_user.id, "throttle", message.chat.id, t)
-
+        except Throttled:
             # Cancel current handler
             raise CancelHandler()

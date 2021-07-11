@@ -7,14 +7,14 @@ name = "pypi"
 aiogram = "*"
 loguru = "*"
 aiohttp = "*"
-apscheduler = "*"
-humanize = "*"
-aioredis = "*"
 databases = {extras = ["sqlite"], version = "*"}
 pydantic = {extras = ["email"], version = "*"}
 numpy = "*"
 
 [dev-packages]
+watchdog = "*"
+pyyaml = "*"
+argh = "*"
 
 [requires]
 python_version = "3.8"

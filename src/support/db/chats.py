@@ -12,8 +12,10 @@ chats = sa.Table(
     sa.Column("title", sa.String, nullable=False),
     sa.Column("invite_link", sa.String),
 
-    sa.Column("is_admin", sa.Boolean, default=False),
     sa.Column("is_banned", sa.Boolean, default=False),
+
+    # Data
+    sa.Column("is_parse_smoothie", sa.Boolean, default=False),
 
     sa.Column("created_at", sa.DateTime, default=datetime.datetime.utcnow),
     sa.Column("updated_at", sa.DateTime, default=datetime.datetime.utcnow)
