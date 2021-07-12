@@ -7,6 +7,7 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram import Bot
 from aiogram.dispatcher import Dispatcher
 
+print(environ)
 # Prepare Logging 
 logger.remove()
 logger.add(stdout, colorize=True, format="<green>{time:DD.MM.YY H:mm:ss}</green> "

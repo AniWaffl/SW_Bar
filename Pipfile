@@ -18,3 +18,14 @@ argh = "*"
 
 [requires]
 python_version = "3.8"
+
+[scripts]
+
+# Запуск контейнера с монтировкой тома ДБ
+docker_run = "docker run -d -P --name SmoothieBot -v /home/aniwaffl/Project_2/SW_Bar/data:/data sw_smoothie_bot"
+
+# Создание контейнера
+docker_build = "docker build -t sw_smoothie_bot ."
+
+# Удаление контейнера без выключения 
+docker_remove = "docker rm SmoothieBot --force"
