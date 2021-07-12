@@ -7,7 +7,6 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram import Bot
 from aiogram.dispatcher import Dispatcher
 
-print(environ)
 # Prepare Logging 
 logger.remove()
 logger.add(stdout, colorize=True, format="<green>{time:DD.MM.YY H:mm:ss}</green> "
@@ -35,8 +34,6 @@ wh_max_connections = 100
 
 admins = [int(i) for i in environ.get("ADMINS").split(",")] # Список глобальных админов
 
-# LOGGING_CHANNEL = 579287019
-
 BOT_COMMANDS: Dict[str, str] = {
     "smoothie": "🧉Помощь в приготовлении смузи",
     }
@@ -44,6 +41,6 @@ BOT_COMMANDS: Dict[str, str] = {
 bot = Bot(token=token, validate_token=True, parse_mode="HTML", server=local_server)
 dp = Dispatcher(bot, run_tasks_by_default=True, storage=storage)
 
-SMOOTHIE_LOG_CHAT_ID = environ.get("SMOOTHIE_LOG_CHAT_ID", admins[0])
-SMOOTHIE_CHANNEL_ID = environ.get("SMOOTHIE_CHANNEL_ID", admins[0])
-SW_BOT_ID = environ.get("SW_BOT_ID")
+SMOOTHIE_LOG_CHAT_ID = int(environ.get("SMOOTHIE_LOG_CHAT_ID", admins[0]))
+SMOOTHIE_CHANNEL_ID = int(environ.get("SMOOTHIE_CHANNEL_ID", admins[0]))
+SW_BOT_ID = int(environ.get("SW_BOT_ID"))

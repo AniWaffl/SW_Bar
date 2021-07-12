@@ -18,9 +18,9 @@ from support.repositories.chats import ChatRepository
 import addons
 
 
-logging_middleware = logging.LoggingMiddleware()
-logging_middleware.logger = logger
-dp.middleware.setup(logging_middleware)  # ALL LOGGING
+# logging_middleware = logging.LoggingMiddleware()
+# logging_middleware.logger = logger
+# dp.middleware.setup(logging_middleware)  # ALL LOGGING
 from support.usermiddleware import UserMiddleware
 dp.middleware.setup(UserMiddleware())  # Мидлварь для паттернов
 from support.throttlingmiddleware import ThrottlingMiddleware

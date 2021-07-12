@@ -98,7 +98,7 @@ class Smootie():
                 lvl = i.pos_find
                 bonus = i.bonus
 
-        text += f"\n\n<b>🍀Бонус: </b> {bonus}"  if bonus else ""
+        text += f"\n\n<b>🍀Бонус: </b> {bonus}"  if bonus not in ["", "Рецепт неизвестен"] else ""
         return text
 
 
@@ -223,9 +223,11 @@ async def get_smoothie_from_SW(message: types.Message, User:User, Chat:Chat, sm:
 
     # Проверка на свежий форвард
     if  not message.forward_from or \
-        not message.forward_from.id  == cfg.SW_BOT_ID or\
+        not message.forward_from.id  == cfg.SW_BOT_ID:# or\
         not datetime.utcnow().date() == message.forward_date.date():
         
+        logger.info(f"{datetime.utcnow().date()}{message.forward_date.date()}")
+        logger.info(f"{message.forward_from.id } { type(cfg.SW_BOT_ID)}")
         logger.info(f"Пользователь c id {User.name} {User.id} Отправил невалидный смузи")
         await message.answer("Я принимаю только сегодняшние форварды смузи от @StartupWarsBot")
         return
