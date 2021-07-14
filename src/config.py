@@ -44,3 +44,11 @@ dp = Dispatcher(bot, run_tasks_by_default=True, storage=storage)
 SMOOTHIE_LOG_CHAT_ID = int(environ.get("SMOOTHIE_LOG_CHAT_ID", admins[0]))
 SMOOTHIE_CHANNEL_ID = int(environ.get("SMOOTHIE_CHANNEL_ID", admins[0]))
 SW_BOT_ID = int(environ.get("SW_BOT_ID"))
+
+RADIO_CHANNEL_ID = int(environ.get("RADIO_CHAT_ID", admins[0]))
+
+USERBOT_SESSION = str(environ.get("USERBOT_SESSION"))
+USERBOT_API_HASH = str(environ.get("USERBOT_API_HASH"))
+USERBOT_API_ID = int(environ.get("USERBOT_API_ID"))
+RADIO_PLAY_CHAT_ID = int(environ.get("RADIO_PLAY_CHAT_ID"))
+INPUT_FILENAME = 'file.raw'

@@ -1,6 +1,8 @@
 from .users import users
 from .chats import chats
 from .recipes import recipes
+from .audios import audios
+
 from .base import metadata, engine
 
 metadata.create_all(bind=engine)

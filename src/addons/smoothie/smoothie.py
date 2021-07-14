@@ -209,7 +209,7 @@ async def send_smoothie(message: types.Message, Chat:Chat, User:User, sm:Smootie
         f"<b>Рецепт:</b> <code>{sm.to_smile(a.recipe)}</code>\n\n"
         f"<b>Бонус:</b> {a.bonus}\n")
 
-    await message.answer(text_best_smoothie, parse_mode="html")
+    await message.answer(text_best_smoothie, parse_mode="html", disable_notification=True)
 
 
 # Принимает рецепты
@@ -223,7 +223,7 @@ async def get_smoothie_from_SW(message: types.Message, User:User, Chat:Chat, sm:
 
     # Проверка на свежий форвард
     if  not message.forward_from or \
-        not message.forward_from.id  == cfg.SW_BOT_ID:# or\
+        not message.forward_from.id  == cfg.SW_BOT_ID or\
         not datetime.utcnow().date() == message.forward_date.date():
         
         logger.info(f"{datetime.utcnow().date()}{message.forward_date.date()}")
@@ -252,7 +252,8 @@ async def get_smoothie_from_SW(message: types.Message, User:User, Chat:Chat, sm:
             f"🍹 Рецепт: {sm.to_smile(rp.recipe)}\n"
             f"💠 Отгадано: {rp.pos_find}\n"
             f"<b>Бонус:</b> {rp.bonus}\n",
-            parse_mode="html")
+            parse_mode="html",
+            disable_notification=True,)
 
     if rp.pos_find == 5:
         await message.answer("Ты приготовил смузи дня 🥂 Поздравляю!")
@@ -262,7 +263,11 @@ async def get_smoothie_from_SW(message: types.Message, User:User, Chat:Chat, sm:
             f"<b>Рецепт:</b> <code>{sm.to_smile(rp.recipe)}</code>\n\n"
             f"<b>Приготовил:</b> <a href ='tg://user?id={User.id}'>{User.name}</a>\n\n"
             f"<b>Бонус:</b> {rp.bonus}\n")
-        await bot.send_message(cfg.SMOOTHIE_CHANNEL_ID, text_best_smoothie, parse_mode="html")
+        await bot.send_message(
+            cfg.SMOOTHIE_CHANNEL_ID, 
+            text_best_smoothie, 
+            parse_mode="html", 
+            disable_notification=True,)
         return
 
     await message.answer(
