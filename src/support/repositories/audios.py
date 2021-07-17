@@ -2,11 +2,14 @@ import random
 import datetime
 from typing import List, Optional
 
+from support.db import reactions
 from support.db.audios import audios
 from support.models.audio import Audio
+from support.models.reaction import Reaction
 from .base import BaseRepository
 
 from  sqlalchemy.sql.expression import func
+from sqlalchemy.exc import IntegrityError
 
 class AudioRepository(BaseRepository):
 
@@ -44,4 +47,27 @@ class AudioRepository(BaseRepository):
         query = audios.update().where(audios.c.message_id==id).values(**values)
         await self.database.execute(query)
         return u
+
+class AudioReactionRepository(BaseRepository):
+
+    async def get_by_id(self, chnnel_id: int, msg_id: int, u_id: int) -> Optional[Reaction]:
+        query = reactions.select().where(
+            reactions.c.message_id==chnnel_id and \
+            reactions.c.message_id==msg_id and \
+            reactions.c.message_id==u_id
+            )
+        r = await self.database.fetch_one(query)
+        if r is None:
+            return None
+        return Reaction.parse_obj(r)
+
+
+    async def create(self, u: Reaction) -> Reaction:
+        values = {**u.dict()}
+        query = reactions.insert().values(**values)
+        try:
+            u = await self.database.execute(query)
+            return u
+        except:
+            return False
 
