@@ -36,6 +36,7 @@ admins = [int(i) for i in environ.get("ADMINS").split(",")] # Список гл�
 
 BOT_COMMANDS: Dict[str, str] = {
     "smoothie": "🧉Помощь в приготовлении смузи",
+    "reflink": "Узнать id человека по рефке"
     }
 
 bot = Bot(token=token, validate_token=True, parse_mode="HTML", server=local_server)

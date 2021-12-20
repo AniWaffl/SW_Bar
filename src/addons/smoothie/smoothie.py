@@ -1,5 +1,6 @@
 import time
 import random
+import aiohttp
 from datetime import datetime
 from typing import List, Union
 
@@ -22,6 +23,13 @@ from support.repositories.recipes import RecipeRepository
 from addons.smoothie.smoothie_api import (all_recipe, generate_list_to_remove)
 
 logger.debug("smoothie loaded")
+
+smoothie_riner_phrases = [
+    "Мойте руки перед едой 🌚",
+    "В этой столовой кормят только сотрудников Black Meza",
+]
+
+trotle = []
 
 
 class Smootie():
@@ -55,13 +63,21 @@ class Smootie():
         self._smoothies.append(new_recipe)
         await RecipeRepository().create(new_recipe)
 
-        self._possible_recipe = generate_list_to_remove(
-            self._possible_recipe,
-            new_recipe.recipe,
-            new_recipe.pos_find, 
-            )
+        self.udp_possible_recipe_list(new_recipe)
+
         return new_recipe
 
+
+    def udp_possible_recipe_list(self, new_recipe: Recipe):
+        try:
+            self._possible_recipe = generate_list_to_remove(
+                self._possible_recipe,
+                new_recipe.recipe,
+                new_recipe.pos_find, 
+            )
+        except AttributeError:
+            raise Exception("You must pass a value of type Recipe")
+            
 
     def get_best(self, ) -> Union[Recipe, bool]:
         # Сбросить старый смузи 
@@ -173,13 +189,9 @@ class Smootie():
         self.discard()
         l: List[Recipe] = await RecipeRepository().get_by_day()
         for recipe in l:
-            await self.add_recipe(
-                recipe.from_user,
-                recipe.recipe,
-                recipe.pos_find,
-                recipe.bonus,
+            self.udp_possible_recipe_list(
+                recipe
             )
-
 
 
 # Перезагрузка смузи
@@ -187,7 +199,7 @@ class Smootie():
 async def restart_smoothie(message: types.Message, Chat:Chat, User:User, sm:Smootie = Smootie()):
     start_time = time.time()
     await sm.restart()
-    await message.answer(f"Пересчитываю смузи ^_^ \nЗатрачено: {time.time() - start_time}сек")
+    await message.answer(f"Пересчитываю смузи ^_^ \nЗатрачено: {int(time.time() - start_time)} сек")
 
 
 # Основной триггер
@@ -203,22 +215,35 @@ async def send_smoothie(message: types.Message, Chat:Chat, User:User, sm:Smootie
         return
 
     user: User = await UserRepository().get_by_id(a.from_user)
+
     text_best_smoothie = (
         f"<b>😍 Самый шикарный смузи на сегодня\n</b>"
-        f"<b>Приготовил:</b> <a href ='tg://user?id={user.id}'>{str(user.name)}</a>\n\n"
+        # f"<b>Приготовил:</b> <a href ='tg://user?id={user.id}'>{str(user.name)}</a>\n\n"
+        f"<b>Приготовил:</b> {str(user.name)}\n\n"
         f"<b>Рецепт:</b> <code>{sm.to_smile(a.recipe)}</code>\n\n"
         f"<b>Бонус:</b> {a.bonus}\n")
 
-    await message.answer(text_best_smoothie, parse_mode="html", disable_notification=True)
+    await message.answer(
+        text_best_smoothie,
+        parse_mode="html",
+        disable_notification=True,
+    )
 
 
 # Принимает рецепты
 @dp.message_handler(
-    chat_type=[types.ChatType.GROUP, types.ChatType.SUPERGROUP], 
+    # chat_type=[types.ChatType.GROUP, types.ChatType.SUPERGROUP], 
     regexp='Ты приготовил 🍹Смузи',)
 async def get_smoothie_from_SW(message: types.Message, User:User, Chat:Chat, sm:Smootie = Smootie()):
-    
-    if not Chat.is_parse_smoothie:
+    # Препятствует одновременной обработке одного смузи из разных чатов
+    if message.text in trotle:
+        return
+
+    trotle.append(message.text)
+
+    # Проверка что еще нет лучшего смузи
+    if sm.get_best():
+        await message.answer("Опоздал, лучший смузи уже найден\n /smoothie")
         return
 
     # Проверка на свежий форвард
@@ -232,10 +257,15 @@ async def get_smoothie_from_SW(message: types.Message, User:User, Chat:Chat, sm:
         await message.answer("Я принимаю только сегодняшние форварды смузи от @StartupWarsBot")
         return
 
-    # Проверка что еще нет лучшего смузи
-    if sm.get_best():
-        await message.answer("Опоздал, лучший смузи уже найден\n /smoothie")
-        return
+    # Проверка что пользователь из корпы
+    answ = f"https://jarvis.bshelf.pw/api/vafelkyaismylove/is_mesa?chat_id={User.id}"
+    async with aiohttp.ClientSession() as session:
+        async with session.get(answ) as resp:
+            resp = await resp.text()
+            if resp != "true":
+                await message.answer(random.choice(smoothie_riner_phrases))
+                return
+
 
     # Обрабатывает форвард и пишет в БД
     rp = await sm.add_recipe(
@@ -263,14 +293,18 @@ async def get_smoothie_from_SW(message: types.Message, User:User, Chat:Chat, sm:
             f"<b>Рецепт:</b> <code>{sm.to_smile(rp.recipe)}</code>\n\n"
             f"<b>Приготовил:</b> <a href ='tg://user?id={User.id}'>{User.name}</a>\n\n"
             f"<b>Бонус:</b> {rp.bonus}\n")
+
         await bot.send_message(
             cfg.SMOOTHIE_CHANNEL_ID, 
             text_best_smoothie, 
             parse_mode="html", 
             disable_notification=True,)
-        return
 
-    await message.answer(
-        f"Спасибо, я принял твой рецепт, несколько вероятных смузи:{sm.get_variant(5)}"
-        )
+    else:
+        await message.answer(
+            f"Спасибо, я принял твой рецепт, несколько вероятных смузи:{sm.get_variant(5)}"
+            )
     
+    trotle.clear()
+    
+

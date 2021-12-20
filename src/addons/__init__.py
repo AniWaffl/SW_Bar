@@ -1,2 +1,4 @@
 from addons.smoothie import smoothie
-from addons.resend_audio_to_chanel import resender
+from addons.referal_link import referal_link
+
+# from addons.set_bot_commands import commands

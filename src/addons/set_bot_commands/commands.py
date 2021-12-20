@@ -9,7 +9,7 @@ from main import dp
 
 logger.debug("Setup bot commands")
 
-async def set_default_commands(commands:Dict[str, str]):
+async def set_default_commands(commands: Dict[str, str]):
     l = []
     for k, v in commands.items():
         l.append(types.BotCommand(k, v))

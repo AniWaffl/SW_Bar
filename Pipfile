@@ -13,6 +13,7 @@ numpy = "*"
 pytgcalls = "*"
 pyrogram = "*"
 ffmpeg-python = "*"
+aiogram-media-group = "*"
 
 [dev-packages]
 watchdog = "*"
