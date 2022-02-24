@@ -2,6 +2,9 @@ import sqlalchemy as sa
 from .base import metadata
 import datetime
 
+def now():
+    return datetime.datetime.utcnow()
+
 recipes = sa.Table(
     "recipes", 
     metadata,

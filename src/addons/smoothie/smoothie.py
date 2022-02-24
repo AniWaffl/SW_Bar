@@ -1,8 +1,10 @@
 import time
 import random
+from aiogram.types import user
 import aiohttp
 from datetime import datetime
 from typing import List, Union
+from abc import ABC, abstractmethod
 
 from aiogram import types
 from aiogram.dispatcher.filters.builtin import IDFilter
@@ -30,6 +32,51 @@ smoothie_riner_phrases = [
 ]
 
 trotle = []
+
+
+class BaseCheker():
+    def __init__(self, href: str, secret_key: str) -> None:
+        self.href = href
+        self.secret_key = secret_key
+
+
+class MesaCheker(BaseCheker):
+
+    def __init__(self, href: str, secret_key: str) -> None:
+        self.href = "https://jarvis.bshelf.pw/api/{secret_key}/is_mesa?chat_id={user_id}"
+        self.secret_key = secret_key
+
+    async def validate(self, user_id: int) -> bool:
+        answ = self.href.format(**{"secret_key": self.secret_key, "user_id": user_id})
+        print(answ)
+        async with aiohttp.ClientSession() as session:
+            async with session.get(answ) as resp:
+                resp = await resp.text()
+                if resp != "true":
+                    return False
+                return True
+
+
+class StarkCheker(BaseCheker):
+
+    def __init__(self, href: str, secret_key: str) -> None:
+        self.href = href
+        self.secret_key = secret_key
+
+    async def validate(self, user_id: int) -> bool:
+        answ = self.href.format(**{"secret_key": self.secret_key, "user_id": user_id})
+        print(answ)
+        async with aiohttp.ClientSession() as session:
+            async with session.get(answ) as resp:
+                resp = await resp.text()
+                if resp != "true":
+                    return True
+                return False
+
+corp = {
+    "mesa": MesaCheker, 
+    "stark": StarkCheker,
+}
 
 
 class Smootie():
@@ -188,6 +235,7 @@ class Smootie():
     async def restart(self, ) -> bool:
         self.discard()
         l: List[Recipe] = await RecipeRepository().get_by_day()
+
         for recipe in l:
             self.udp_possible_recipe_list(
                 recipe
@@ -232,8 +280,8 @@ async def send_smoothie(message: types.Message, Chat:Chat, User:User, sm:Smootie
 
 # Принимает рецепты
 @dp.message_handler(
-    # chat_type=[types.ChatType.GROUP, types.ChatType.SUPERGROUP], 
-    regexp='Ты приготовил 🍹Смузи',)
+    regexp='Ты приготовил 🍹Смузи',
+)
 async def get_smoothie_from_SW(message: types.Message, User:User, Chat:Chat, sm:Smootie = Smootie()):
     # Препятствует одновременной обработке одного смузи из разных чатов
     if message.text in trotle:
@@ -258,6 +306,11 @@ async def get_smoothie_from_SW(message: types.Message, User:User, Chat:Chat, sm:
         return
 
     # Проверка что пользователь из корпы
+
+    # if PermissionSmoothieCheker.validate(User.id):
+    #     await message.answer(random.choice(smoothie_riner_phrases))
+    #     return
+        
     answ = f"https://jarvis.bshelf.pw/api/vafelkyaismylove/is_mesa?chat_id={User.id}"
     async with aiohttp.ClientSession() as session:
         async with session.get(answ) as resp:
@@ -301,9 +354,7 @@ async def get_smoothie_from_SW(message: types.Message, User:User, Chat:Chat, sm:
             disable_notification=True,)
 
     else:
-        await message.answer(
-            f"Спасибо, я принял твой рецепт, несколько вероятных смузи:{sm.get_variant(5)}"
-            )
+        await message.answer(f"Спасибо, я принял твой рецепт, несколько вероятных смузи:{sm.get_variant(5)}")
     
     trotle.clear()
     
