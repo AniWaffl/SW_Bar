@@ -1,11 +1,14 @@
 from os import environ
 from sys import stdout
 from typing import Dict
+from dotenv import load_dotenv
 from loguru import logger
 from aiogram.bot.api import TELEGRAM_PRODUCTION
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram import Bot
 from aiogram.dispatcher import Dispatcher
+
+load_dotenv()
 
 # Prepare Logging 
 logger.remove()

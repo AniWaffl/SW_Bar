@@ -78,6 +78,8 @@ async def proceed_telegram_update(req: web.Request):
 
 
 async def on_startup(app: Application):
+    from support.db.base import database
+    await database.connect()
     botinfo = await dp.bot.me
     if not cfg.POLLING:
         logger.debug(f"Устанавливаю вебхук {cfg.WEBHOOK_URL}")

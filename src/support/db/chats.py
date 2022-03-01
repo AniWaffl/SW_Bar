@@ -7,7 +7,7 @@ chats = sa.Table(
     metadata,
 
     sa.Column("db_id", sa.Integer, primary_key=True, unique=True),
-    sa.Column("id", sa.Integer, index=True, unique=True, nullable=False),
+    sa.Column("id", sa.BigInteger, index=True, unique=True, nullable=False),
     sa.Column("username", sa.String, default=None),
     sa.Column("title", sa.String, nullable=False),
     sa.Column("invite_link", sa.String),
