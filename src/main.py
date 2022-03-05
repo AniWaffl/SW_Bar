@@ -14,6 +14,9 @@ import support.db
 from support.models.chat import Chat
 from support.repositories.chats import ChatRepository 
 
+# Register all filters
+import support.filters
+
 # Activate all modules
 import addons
 
