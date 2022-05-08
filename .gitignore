@@ -7,3 +7,4 @@ __pycache__
 *.raw
 *.session
 *.session-journal
+.pytest_cache
