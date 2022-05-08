@@ -35,3 +35,4 @@ class UserRepository(BaseRepository):
         await self.database.execute(query)
         return u
 
+user = UserRepository()

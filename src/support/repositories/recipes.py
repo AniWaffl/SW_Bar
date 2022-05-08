@@ -6,6 +6,8 @@ from support.models.recipe import Recipe
 from .base import BaseRepository
 
 from sqlalchemy import desc
+
+
 class RecipeRepository(BaseRepository):
 
     async def get_all(self, limit: int = 100, skip: int = 0) -> List[Recipe]:
@@ -46,3 +48,4 @@ class RecipeRepository(BaseRepository):
     #     res = await self.database.execute(query)
     #     return res
 
+recipe = RecipeRepository()

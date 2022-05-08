@@ -48,3 +48,4 @@ class ChatRepository(BaseRepository):
         res = await self.database.execute(query)
         return res
 
+chat = ChatRepository()
